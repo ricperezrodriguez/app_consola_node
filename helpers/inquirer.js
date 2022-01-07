@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const Tareas = require('../models/tareas');
 require('colors');
 
 
@@ -14,27 +15,27 @@ const preguntas = [
             },
             {
                 value: '2',
-                name: `${'2.'.green }Listar tareas`
+                name: `${'2.'.green}Listar tareas`
             },
             {
                 value: '3',
-                name: `${'3'.green } Listar tareas completadas`
+                name: `${'3'.green} Listar tareas completadas`
             },
             {
                 value: '4',
-                name: `${'4.'.green }Listar tareas pendientes`
+                name: `${'4.'.green}Listar tareas pendientes`
             },
             {
                 value: '5',
-                name: `${'5.'.green }Completar tarea(s)`
+                name: `${'5.'.green}Completar tarea(s)`
             },
             {
                 value: '6',
-                name: `${'6.'.green }Borrar tarea`
+                name: `${'6.'.green}Borrar tarea`
             },
             {
                 value: '0',
-                name: `${'0.'.green }Salir`
+                name: `${'0.'.green}Salir`
             },
         ]
     }
@@ -47,7 +48,6 @@ const preguntas = [
 
 
 const inquirerMenu = async () => {
-
     console.clear();
     console.log('========================'.green);
     console.log(' Seleccione una opción'.white);
@@ -62,7 +62,7 @@ const inquirerMenu = async () => {
 
 
 
-const pausa = async() => {
+const pausa = async () => {
     const preguntaPausa = [
         {
             type: 'input',
@@ -70,7 +70,7 @@ const pausa = async() => {
             message: `Presione ${'ENTER'.blue} para continuar`
         }
     ]
-    
+
     console.log('\n');
     await inquirer.prompt(preguntaPausa);
 }
@@ -80,14 +80,14 @@ const pausa = async() => {
 
 
 
-const leerInput = async( message ) => {
+const leerInput = async (message) => {
     const question = [
         {
             type: 'input',
             name: 'desc',
             message,
-            validate( value ) {
-                if( value.length === 0 ) {
+            validate(value) {
+                if (value.length === 0) {
                     return 'Por favor ingrese un valor'
                 }
                 return true;
@@ -101,8 +101,61 @@ const leerInput = async( message ) => {
 
 
 
+const listadoTareasBorrar = async (tareas = []) => {
+
+    const choices = tareas.map((tarea, i) => {
+        const idx = `${i + 1}.`.green;
+
+        return {
+            value: tarea.id,
+            name: `${idx} ${tarea.desc}`
+        }
+    });
+
+    choices.unshift( {
+        value: '0',
+        name: '0.'.green + ' Cancelar'
+    });
+
+    const preguntas = [
+        {
+            type: 'list',
+            name: 'id',
+            message: 'Borrar',
+            choices
+        }
+    ]
+    const { id } = await inquirer.prompt(preguntas);
+    return id;
+}
+
+
+
+
+
+const confirmar = async(message) => {
+    const question = [
+        {
+            type: 'confirm',
+            name: 'ok',
+            message
+        }
+    ];
+
+    const { ok } = await inquirer.prompt(question);
+    return ok;
+}
+
+
+
+
+
+
+
 module.exports = {
     inquirerMenu,
     pausa,
-    leerInput
+    leerInput,
+    listadoTareasBorrar,
+    confirmar
 }
